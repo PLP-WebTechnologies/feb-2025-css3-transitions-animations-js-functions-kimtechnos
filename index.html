@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Animations</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Interactive Animations</h1>
+      <div class="preferences">
+        <h2>User Preferences</h2>
+        <div class="preference-option">
+          <label for="theme">Select Theme:</label>
+          <select id="theme">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="blue">Blue</option>
+          </select>
+        </div>
+        <div class="preference-option">
+          <label for="animation-speed">Animation Speed</label>
+          <select id="animation-speed">
+            <option value="slow">Slow</option>
+            <option value="normal">Normal</option>
+            <option value="fast">Fast</option>
+          </select>
+        </div>
+        <button id="save-prefs" class="btn">Save Preferences</button>
+      </div>
+      <div class="animation-area">
+        <h2>Animation Playground</h2>
+        <div id="animated-box" class="box"></div>
+        <button id="animate-btn" class="btn pulse">Animate Box</button>
+        <button id="reset-btn" class="btn">Reset Animation</button>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
