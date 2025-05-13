@@ -7,74 +7,125 @@ document.addEventListener("DOMContentLoaded", function () {
   const themeSelect = document.getElementById("theme");
   const speedSelect = document.getElementById("animation-speed");
 
-  // Available animation classes
+  // Animation types
   const animations = ["rotate", "bounce", "color-change"];
   let currentAnimationIndex = 0;
 
-  // Load saved preferences from localStorage
+  // Load saved preferences
   loadPreferences();
 
-  // Handle Animate button click
-  animateBtn.addEventListener("click", () => {
-    // Remove previous animation class
-    animatedBox.classList.remove(animations[currentAnimationIndex]);
+  // Event listeners
+  animateBtn.addEventListener("click", triggerAnimation);
+  resetBtn.addEventListener("click", resetAnimation);
+  savePrefsBtn.addEventListener("click", savePreferences);
 
-    // Cycle to next animation
+  // Function to trigger animation
+  function triggerAnimation() {
+    // Remove any existing animation classes
+    resetAnimation();
+
+    // Add the current animation class
+    const animationClass = animations[currentAnimationIndex];
+    animatedBox.classList.add(animationClass);
+
+    // Update animation index for next click
     currentAnimationIndex = (currentAnimationIndex + 1) % animations.length;
 
-    // Add new animation class
-    animatedBox.classList.add(animations[currentAnimationIndex]);
+    // Save the current animation state
+    localStorage.setItem("lastAnimation", animationClass);
+  }
 
-    // Apply selected animation speed
-    const speed = speedSelect.value;
-    animatedBox.style.animationDuration =
-      speed === "slow" ? "3s" : speed === "fast" ? "0.5s" : "1.5s";
-  });
+  // Function to reset animation
+  function resetAnimation() {
+    animations.forEach((anim) => {
+      animatedBox.classList.remove(anim);
+    });
+  }
 
-  // Handle Reset button click
-  resetBtn.addEventListener("click", () => {
-    // Remove all animation classes
-    animations.forEach((anim) => animatedBox.classList.remove(anim));
-
-    // Reset animation index
-    currentAnimationIndex = 0;
-
-    // Clear inline styles
-    animatedBox.style.animationDuration = "";
-  });
-
-  // Handle Save Preferences button click
-  savePrefsBtn.addEventListener("click", () => {
+  // Function to save user preferences
+  function savePreferences() {
     const theme = themeSelect.value;
     const speed = speedSelect.value;
 
-    // Save preferences to localStorage
-    localStorage.setItem("theme", theme);
-    localStorage.setItem("speed", speed);
+    localStorage.setItem("userTheme", theme);
+    localStorage.setItem("animationSpeed", speed);
 
-    // Apply theme immediately
-    applyTheme(theme);
-  });
+    // Apply preferences immediately
+    applyPreferences(theme, speed);
 
-  // Function to load preferences from localStorage
+    // Show confirmation animation
+    savePrefsBtn.textContent = "Saved!";
+    savePrefsBtn.style.backgroundColor = "#2ecc71";
+    setTimeout(() => {
+      savePrefsBtn.textContent = "Save Preferences";
+      savePrefsBtn.style.backgroundColor = "#4CAF50";
+    }, 1500);
+  }
+
+  // Function to load and apply saved preferences
   function loadPreferences() {
-    const savedTheme = localStorage.getItem("theme") || "light";
-    const savedSpeed = localStorage.getItem("speed") || "normal";
+    const savedTheme = localStorage.getItem("userTheme") || "light";
+    const savedSpeed = localStorage.getItem("animationSpeed") || "normal";
+    const lastAnimation = localStorage.getItem("lastAnimation");
 
-    // Set dropdowns to saved values
+    // Set select values
     themeSelect.value = savedTheme;
     speedSelect.value = savedSpeed;
 
-    // Apply theme on page load
-    applyTheme(savedTheme);
+    // Apply preferences
+    applyPreferences(savedTheme, savedSpeed);
+
+    // If there was a last animation, show it
+    if (lastAnimation) {
+      // Find the index of the last animation
+      currentAnimationIndex = animations.indexOf(lastAnimation);
+      if (currentAnimationIndex === -1) currentAnimationIndex = 0;
+
+      // Apply the animation
+      animatedBox.classList.add(lastAnimation);
+    }
   }
 
-  // Function to apply theme by adding class to body
-  function applyTheme(theme) {
-    // Remove previously applied theme classes
-    document.body.classList.remove("light", "dark", "blue");
+  // Function to apply preferences to the page
+  function applyPreferences(theme, speed) {
+    // Apply theme
+    document.body.className = ""; // Clear any existing theme classes
+    document.body.classList.add(`${theme}-theme`);
 
-    // Add the selected theme class
-    document.body.classList.add(theme);
+    // Apply animation speed
+    let speedValue;
+    switch (speed) {
+      case "slow":
+        speedValue = "3s";
+        break;
+      case "fast":
+        speedValue = "0.5s";
+        break;
+      default:
+        speedValue = "1.5s";
+    }
+
+    document.documentElement.style.setProperty("--animation-speed", speedValue);
   }
+
+  //  Add hover effect animation
+  animatedBox.addEventListener("mouseenter", function () {
+    if (
+      !this.classList.contains("rotate") &&
+      !this.classList.contains("bounce") &&
+      !this.classList.contains("color-change")
+    ) {
+      this.style.transform = "scale(1.1)";
+    }
+  });
+
+  animatedBox.addEventListener("mouseleave", function () {
+    if (
+      !this.classList.contains("rotate") &&
+      !this.classList.contains("bounce") &&
+      !this.classList.contains("color-change")
+    ) {
+      this.style.transform = "scale(1)";
+    }
+  });
 });
